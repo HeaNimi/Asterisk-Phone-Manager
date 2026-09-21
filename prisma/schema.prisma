@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  sessions     Session[]
+}
+
+model Session {
+  id        String   @id
+  adminId   String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+}
+
+model Phone {
+  id                  String         @id @default(cuid())
+  name                String
+  extension           String         @unique
+  macAddress          String         @unique
+  model               String         @default("Cisco 8841")
+  secret              String
+  username            String?
+  displayName         String?
+  enabled             Boolean        @default(true)
+  profileId           String?
+  callManagerPrimary  String         @default("asterisk")
+  callManagerFailover String?
+  timezone            String         @default("Etc/UTC")
+  ntpServer           String?
+  webAccess           Boolean        @default(false)
+  settingsAccess      Boolean        @default(true)
+  sshAccess           Boolean        @default(false)
+  callWaiting         Boolean        @default(true)
+  doNotDisturb        Boolean        @default(false)
+  autoAnswer          Boolean        @default(false)
+  voicemailNumber     String?
+  voicemailName       String?
+  ringSetting         String         @default("Cisco")
+  sipTransport        String         @default("UDP")
+  backgroundAssetId   String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  profile             PhoneProfile?  @relation(fields: [profileId], references: [id], onDelete: SetNull)
+  backgroundAsset     TftpAsset?     @relation("PhoneBackground", fields: [backgroundAssetId], references: [id], onDelete: SetNull)
+  lineKeys            PhoneLineKey[]
+  extensionAccount    Extension?
+
+  @@index([profileId])
+}
+
+model Extension {
+  id          String   @id @default(cuid())
+  extension   String   @unique
+  name        String
+  displayName String?
+  secret      String
+  username    String?
+  enabled     Boolean  @default(true)
+  phoneId     String?  @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  phone       Phone?   @relation(fields: [phoneId], references: [id], onDelete: SetNull)
+
+  @@index([enabled])
+}
+
+model PhoneLineKey {
+  id          String  @id @default(cuid())
+  phoneId     String
+  position    Int
+  label       String
+  extension   String?
+  feature     String  @default("line")
+  ringSetting String?
+  phone       Phone   @relation(fields: [phoneId], references: [id], onDelete: Cascade)
+
+  @@unique([phoneId, position])
+}
+
+model PhoneProfile {
+  id                  String           @id @default(cuid())
+  name                String           @unique
+  model               String           @default("Cisco 8841")
+  callManagerPrimary  String           @default("asterisk")
+  callManagerFailover String?
+  timezone            String           @default("Etc/UTC")
+  ntpServer           String?
+  webAccess           Boolean          @default(false)
+  settingsAccess      Boolean          @default(true)
+  sshAccess           Boolean          @default(false)
+  callWaiting         Boolean          @default(true)
+  doNotDisturb        Boolean          @default(false)
+  autoAnswer          Boolean          @default(false)
+  voicemailNumber     String?
+  voicemailName       String?
+  ringSetting         String           @default("Cisco")
+  sipTransport        String           @default("UDP")
+  backgroundAssetId   String?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  phones              Phone[]
+  lineKeys            ProfileLineKey[]
+  backgroundAsset     TftpAsset?       @relation("ProfileBackground", fields: [backgroundAssetId], references: [id], onDelete: SetNull)
+}
+
+model ProfileLineKey {
+  id          String       @id @default(cuid())
+  profileId   String
+  position    Int
+  label       String
+  extension   String?
+  feature     String       @default("line")
+  ringSetting String?
+  profile     PhoneProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, position])
+}
+
+model Contact {
+  id          String   @id @default(cuid())
+  name        String
+  number      String
+  description String?
+  speedDial   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([name])
+}
+
+model TftpAsset {
+  id                 String         @id @default(cuid())
+  filename           String         @unique
+  originalName       String
+  mimeType           String?
+  size               Int
+  path               String
+  createdAt          DateTime       @default(now())
+  phoneBackgrounds   Phone[]        @relation("PhoneBackground")
+  profileBackgrounds PhoneProfile[] @relation("ProfileBackground")
+}

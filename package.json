@@ -1,0 +1,33 @@
+{
+  "name": "asterisk-phone-manager",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "typecheck": "nuxt typecheck",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "prisma:generate": "prisma generate"
+  },
+  "dependencies": {
+    "@nuxt/icon": "^2.5.1",
+    "@nuxt/ui": "^4.11.1",
+    "@nuxtjs/tailwindcss": "6.14.0",
+    "@prisma/client": "6.16.2",
+    "bcryptjs": "3.0.2",
+    "h3": "1.15.4",
+    "nuxt": "4.5.1",
+    "prisma": "6.16.2",
+    "vue": "3.5.21",
+    "vue-router": "4.5.1",
+    "zod": "4.1.5"
+  },
+  "devDependencies": {
+    "@types/node": "24.5.2",
+    "tsx": "4.20.5",
+    "typescript": "5.9.2",
+    "vue-tsc": "3.0.6"
+  }
+}

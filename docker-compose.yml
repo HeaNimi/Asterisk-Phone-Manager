@@ -1,0 +1,15 @@
+services:
+  phone-manager:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file: .env
+    environment:
+      DATABASE_URL: file:/app/data/dev.db
+    volumes:
+      - ./data:/app/data
+      # Mount your Asterisk host config directory here if desired:
+      # - /etc/asterisk:/app/data/asterisk
+      # Mount the host TFTP root here; TFTP serving remains on the host:
+      # - /srv/tftp:/app/data/tftp
+    restart: unless-stopped
