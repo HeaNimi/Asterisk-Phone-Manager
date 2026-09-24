@@ -15,6 +15,21 @@ model Admin {
   sessions     Session[]
 }
 
+model CiscoGlobalConfig {
+  id                  Int     @id @default(1)
+  loadInformation     String?
+  inactiveLoadInformation String?
+  timezone            String  @default("Etc/UTC")
+  ntpServer           String?
+  directoryEnabled    Boolean @default(true)
+  directoryUrl        String?
+  messagesUrl         String?
+  servicesUrl         String?
+  fullConfig          Boolean @default(true)
+  advancedXml         String  @default("")
+  updatedAt           DateTime @updatedAt
+}
+
 model Session {
   id        String   @id
   adminId   String
